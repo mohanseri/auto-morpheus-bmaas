@@ -1,0 +1,111 @@
+name: CI on Merge
+
+on:
+  push:
+    branches:
+      - mainline
+
+# on: [push]
+
+env:
+  APP_NAME: <_APP_NAME_>
+  APP_ID: <_APP_ID_>
+  image_registry: quay.io/ccsportal/<_APP_NAME_>
+
+  version: "2.${GITHUB_RUN_NUMBER}.0"
+  channel: Jenkins-Continuous
+  registry: quay.io
+  quay_username: ${{ secrets.CCS_QUAY_CCSPORTAL_BUILDER }}
+  quay_password: ${{ secrets.CCS_QUAY_CCSPORTAL_BUILDER_PASSWORD }}
+  jfrog_username: ${{ secrets.CCS_JFROG_USERNAME }}
+  jfrog_password: ${{ secrets.CCS_JFROG_PASSWORD }}
+  gh_token: ${{ secrets.GLCP_GH_TOKEN }}
+  updatectl_user: ${{ secrets.CCS_UPDATECTL_USER }}
+  updatectl_server: ${{ secrets.CCS_UPDATECTL_SERVER }}
+  updatectl_key: ${{ secrets.CCS_UPDATECTL_KEY }}
+  jira_user: ${{ secrets.CCS_JIRA_USER }}
+  jira_apikey: ${{ secrets.CCS_JIRA_APIKEY }}
+
+jobs:
+  Git_Tag:
+    runs-on: ubuntu-latest
+    name: Create and update new git tag test
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Git Tag
+        uses: glcp/ccs-automation/ci_cd_commons/tag_git_new@v3
+        id: new-tag
+        with:
+          version: ${{ env.version }}
+
+    outputs:
+      tag: ${{ steps.new-tag.outputs.gittag }}
+
+  Docker_APP_Build:
+    needs: Git_Tag
+    runs-on: ubuntu-latest
+    name: Create and push Application container
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Docker Push
+        uses: glcp/ccs-automation/ci_cd_commons/docker_build_push/app@v2
+        with:
+            appname: ${{ env.APP_NAME }}
+            appid: ${{ env.APP_ID }}
+            tag: ${{ needs.Git_Tag.outputs.tag }}
+            target: test-image
+
+            registry: quay.io
+            quay_username: ${{ env.quay_username }}
+            quay_password: ${{ env.quay_password }}
+            image_registry: ${{ env.image_registry }}
+            jfrog_username: ${{ env.jfrog_username }}
+            jfrog_password: ${{ env.jfrog_password }}
+            gh_token: ${{ env.gh_token }}
+
+    outputs:
+      tag: ${{ needs.Git_Tag.outputs.tag }}
+
+  coreupdate_job:
+    needs: Docker_APP_Build
+    runs-on: ccs-runner
+    name: Create and push k8s artifacts
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v2
+
+    - name: Coreupdate Push
+      uses: glcp/ccs-automation/ci_cd_commons/coreupdate@v2
+      with:
+          appname: ${{ env.APP_NAME }}
+          appid: ${{ env.APP_ID }}
+          tag: ${{ needs.Docker_APP_Build.outputs.tag }}
+
+          image_registry: ${{ env.image_registry }}
+          channel: ${{ env.channel }}
+
+          UPDATECTL_USER: ${{ env.updatectl_user }}
+          UPDATECTL_SERVER: ${{ env.updatectl_server }}
+          UPDATECTL_KEY: ${{ env.updatectl_key }}
+
+    outputs:
+      tag: ${{ needs.Docker_APP_Build.outputs.tag }}
+
+  Jira_Update:
+    needs: coreupdate_job
+    runs-on: ubuntu-latest
+    name: Update Jira Ticket with the build tag
+    steps:
+    - name: Update Jira
+      id: updatejira
+      uses: glcp/ccs-automation/ci_cd_commons/jira_update@v2
+      with:
+        pull_request_title: ${{ join(github.event.commits.*.message, ', ') }}
+        build_tag: ${{ needs.BUILD_PUBLISH.outputs.tag }}
+        jira_user: ${{ env.jira_user }}
+        jira_apikey: ${{ env.jira_apikey }}
+        gh_token: ${{ env.gh_token }}

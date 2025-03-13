@@ -1,0 +1,101 @@
+{
+  "comment": "local laptop test runs/development get your test repo user_creds.json from jenkins job",
+  "triton": {
+    "users": {
+      "username": "password"
+    },
+    "app_api_secrets": {
+      "app_api_id": "api_secret"
+    },
+    "ext_api_secrets": {
+      "ext_api_id": "api_secret"
+    },
+    "unified_api_secrets": {
+      "unified_api_id": "api_secret"
+    }
+  },
+  "triton-lite": {
+    "users": {
+      "username": "password"
+    },
+    "app_api_secrets": {
+      "app_api_id": "api_secret"
+    },
+    "ext_api_secrets": {
+      "ext_api_id": "api_secret"
+    },
+    "unified_api_secrets": {
+      "unified_api_id": "api_secret"
+    }
+  },
+  "mira": {
+    "users": {
+      "username": "password"
+    },
+    "app_api_secrets": {
+      "app_api_id": "api_secret"
+    },
+    "ext_api_secrets": {
+      "ext_api_id": "api_secret"
+    },
+    "unified_api_secrets": {
+      "unified_api_id": "api_secret"
+    }
+  },
+  "polaris": {
+    "users": {
+      "username": "password"
+    },
+    "app_api_secrets": {
+      "app_api_id": "api_secret"
+    },
+    "ext_api_secrets": {
+      "ext_api_id": "api_secret"
+    },
+    "unified_api_secrets": {
+      "unified_api_id": "api_secret"
+    }
+  },
+  "gemini": {
+    "users": {
+      "username": "password"
+    },
+    "app_api_secrets": {
+      "app_api_id": "api_secret"
+    },
+    "ext_api_secrets": {
+      "ext_api_id": "api_secret"
+    },
+    "unified_api_secrets": {
+      "unified_api_id": "api_secret"
+    }
+  },
+  "pavo": {
+    "users": {
+      "username": "password"
+    },
+    "app_api_secrets": {
+      "app_api_id": "secret"
+    },
+    "ext_api_secrets": {
+      "ext_api_id": "api_secret"
+    },
+    "unified_api_secrets": {
+      "unified_api_id": "api_secret"
+    }
+  },
+  "aquila": {
+    "users": {
+      "username": "password"
+    },
+    "app_api_secrets": {
+      "app_api_id": "api_secret"
+    },
+    "ext_api_secrets": {
+      "ext_api_id": "api_secret"
+    },
+    "unified_api_secrets": {
+      "unified_api_id": "api_secret"
+    }
+  }
+}

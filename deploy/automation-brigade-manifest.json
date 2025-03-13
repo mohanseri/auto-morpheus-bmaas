@@ -1,0 +1,23 @@
+{
+    "payload": [
+        {
+            "appid": "__APP__ID__",
+            "stages": [
+                {
+                    "stagename": "postdeployment",
+                    "payload": [
+                        {
+                            "filename": "automation/__APP__NAME-test-job.yaml"
+                        }
+                    ]
+                }
+            ],
+            "Version": "${version}"
+        }
+    ],
+    "configmap": {
+        "name": "__APP_NAME__",
+        "infra": ["clusterinfo"]
+    },
+    "multi-region": "supported"
+}

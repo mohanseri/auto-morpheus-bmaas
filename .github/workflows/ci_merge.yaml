@@ -1,0 +1,84 @@
+name: CI on Merge
+
+on:
+  push:
+    branches:
+      - mainline
+
+# on: [push]
+
+env:
+  APP_NAME: <_APP_NAME_>
+  version: "2.${GITHUB_RUN_NUMBER}.0"
+  APP_ID: <_COREUPDATE_APP_ID_>
+  image_registry: quay.io/ccsportal/<IMAGE_REPOSITORY_NAME>
+
+  registry: quay.io
+  quay_username: ${{ secrets.CCS_QUAY_CCSPORTAL_BUILDER }}
+  quay_password: ${{ secrets.CCS_QUAY_CCSPORTAL_BUILDER_PASSWORD }}
+  jfrog_user: ${{ secrets.CCS_JFROG_USERNAME }}
+  jfrog_passwd: ${{ secrets.CCS_JFROG_PASSWORD }}
+  gh_token: ${{ secrets.GLCP_GH_TOKEN }}
+  updatectl_user: ${{ secrets.CCS_UPDATECTL_USER }}
+  updatectl_server: ${{ secrets.CCS_UPDATECTL_SERVER }}
+  updatectl_key: ${{ secrets.CCS_UPDATECTL_KEY }}
+  jira_user: ${{ secrets.CCS_JIRA_USER }}
+  jira_apikey: ${{ secrets.CCS_JIRA_APIKEY }}
+
+jobs:
+
+  CI:
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Run pre-checks
+      id: precheck
+      uses: glcp/ccs-automation/ci_cd_commons/pr_title_validation@v2
+      with:
+        pull_request_title: ${{ github.event.pull_request.title }}
+        jira_user: ${{ env.jira_user }}
+        jira_apikey: ${{ env.jira_apikey }}
+        gh_token: ${{ env.gh_token }}
+
+    - name: BootStrap Dev Env
+      id: bootstrap
+      uses: glcp/ccs-automation/ci_cd_commons/bootstrap-dev-env@v2
+      with:
+          app_name: ${{ env.APP_NAME }}
+          devenvdir: ${{ env.DEV_ENV_DIR }}
+          dcprojectname: ${{ env.DC_PROJECT_NAME }}
+
+          registry: quay.io
+          quay_username: ${{ env.quay_username }}
+          quay_password: ${{ env.quay_password }}
+          gh_token: ${{ env.gh_token }}
+          jfrog_user: ${{ env.jfrog_user }}
+          jfrog_passwd: ${{ secrets.jfrog_passwd }}
+
+    - name: Lint
+      id: lint
+      shell: bash
+      run: |
+          cd $GITHUB_WORKSPACE/$DEV_ENV_DIR
+          #!/bin/bash -x
+          ls -la
+          ws/${APP_NAME}/automation/ci/run-in-ccs-dev.sh \
+            ${DC_PROJECT_NAME} \
+            poetry run scripts/lint.sh
+    - name: Docker Build
+      id: build
+      shell: bash
+      run: |
+          cd $GITHUB_WORKSPACE/$DEV_ENV_DIR/ws/${APP_NAME}
+          echo "Running CI build with environment variables:"
+          #!/bin/bash -x
+          docker build \
+            --no-cache \
+            --pull \
+            --force-rm \
+            --file docker/Dockerfile \
+            --build-arg JFROG_USERNAME=${jfrog_user} \
+            --build-arg JFROG_PASSWORD=${jfrog_passwd} \
+            --tag ci_image:${APP_NAME} \
+            --target ci-stage \
+            .
