@@ -3,7 +3,7 @@ name: CI on Merge
 on:
   push:
     branches:
-      - mainline
+      - main
 
 # on: [push]
 
