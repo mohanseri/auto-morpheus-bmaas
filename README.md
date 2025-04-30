@@ -3,7 +3,7 @@ Purpose of this repo is to provide overview of folder structure in test repo and
 
 - Test repo uses similar structure in other test repo such as auto-activate-sm-workflows, auto-login-workflows, auto-ui-functionals, and few activate/SM FT repos
 
-- Test cases are developed locally, developed from Engineer's laptop environment and once working for different test beds, test cases are merged into mainline and start running periodically inside k8s container environment
+- Test cases are developed locally, developed from Engineer's laptop environment and once working for different test beds, test cases are merged into main and start running periodically inside k8s container environment
 
 - Test cases can be mix of Api and playwrught UI based, By default test cases for UI run in headless mode on k8s environment and headed mode in local environment
 
