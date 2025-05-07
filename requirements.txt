@@ -1,0 +1,6 @@
+pydantic-settings
+requests
+pytest
+werkzeug
+black
+flake8
