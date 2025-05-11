@@ -3,7 +3,7 @@ name: CI on PR
 on: [pull_request]
 
 env:
-  APP_NAME: auto-morpheus-bmplugin
+  APP_NAME: auto-morpheus-bmaas
   gh_token: ${{ secrets.GLCP_GH_TOKEN }}
   jira_user: ${{ secrets.CCS_JIRA_USER }}
   jira_apikey: ${{ secrets.CCS_JIRA_APIKEY }}
