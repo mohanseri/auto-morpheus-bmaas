@@ -6,7 +6,7 @@ on:
      - main
 
 env:
-  APP_NAME: auto-morpheus-bmplugin
+  APP_NAME: auto-morpheus-bmaas
   version: "8.0.5.localdev${GITHUB_RUN_NUMBER}"
   JFROG_USERNAME: ${{ secrets.CCS_JFROG_USERNAME }}
   JFROG_PASSWORD: ${{ secrets.CCS_JFROG_PASSWORD }}
@@ -37,7 +37,7 @@ jobs:
       - name: Build Sphinx Docs
         run: |
           source .venv/bin/activate
-          sphinx-apidoc -f -e -o docs/source auto-morpheus-bmplugin/
+          sphinx-apidoc -f -e -o docs/source auto-morpheus-bmaas/
           make -C docs clean
           make -C docs html
 

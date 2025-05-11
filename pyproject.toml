@@ -1,14 +1,16 @@
 [tool.poetry]
-name = "auto-morpheus-bmplugin"
-version = "8.0.5"
+name = "auto-morpheus-bmaas"
+version = "8.0.6"
 description = "HPE Private Cloud Morpheus Baremetal Automation Library "
 authors = ["Baremetal Plugin QA"]
+package-mode = false
 
 [tool.poetry.dependencies]
 playwright = "^1.40.0"
-hpe-morpheus-automation-libs = "8.0.5.dev51"
+hpe-morpheus-automation-libs = "8.0.6.dev57"
 python = ">=3.10, <4.0"
 pydantic = "^2.10.6"
+python-dotenv = "^1.0.0"  # Added python-dotenv dependency
 
 [[tool.poetry.source]]
 name = "jfrog"
